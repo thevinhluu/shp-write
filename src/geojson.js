@@ -14,7 +14,14 @@ function justType(gjType, shpType) {
   return function (gj) {
     var oftype = gj.features.filter(isType(gjType));
     return {
-      geometries: shpType === 'POLYLINE' ? [oftype.map(justCoords)] : oftype.map(justCoords),
+      geometries:
+        shpType === "POLYGON"
+          ? [oftype.map(justCoords)]
+          : shpType === "POLYLINE"
+          ? oftype.map(function (t) {
+              return [justCoords(t)];
+            })
+          : oftype.map(justCoords),
       properties: oftype.map(justProps),
       type: shpType,
     };
@@ -22,7 +29,7 @@ function justType(gjType, shpType) {
 }
 
 /**
- * 
+ *
  * @param {Feature} feature The feature to get the coordinates from
  * @returns {number[] | number[][] | number[][][] | number[][][][]}
  */
@@ -31,8 +38,8 @@ function justCoords(feature) {
 }
 
 /**
- * 
- * @param {Feature} feature The feature to get the properties from 
+ *
+ * @param {Feature} feature The feature to get the properties from
  * @returns {Object.<string, string>}
  */
 function justProps(feature) {
